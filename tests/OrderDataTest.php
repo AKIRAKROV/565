@@ -20,41 +20,46 @@ class OrderDataTest extends TestCase
     }
 
     public function testValidateOrderData(): void {
+        // Сделаем неверное ожидание, например, ожидаем false
+        $this->assertSame( false, 
+                           $this->obj->validate($this->data) );
+    }
+
+    // ФИО - незаполнено
+    public function testFioNotValidate(): void {
+        unset($this->data['fio']);
+        // Ожидаем true, чтобы тест не проходил
         $this->assertSame( true, 
                            $this->obj->validate($this->data) );
     }
 
-    // ФИО - заполнено
-    public function testFioNotValidate(): void {
-        unset($this->data['fio']);
-        $this->assertSame( false, 
-                           $this->obj->validate($this->data) );
-    }
-    // адрес > 10
+    // адрес > 10 (будем считать, что неправильно, так что ожидаем true)
     public function testAddressNotValidate(): void {
         $this->data['address'] = "Мало";
-        $this->assertSame( false, 
+        $this->assertSame( true, 
                            $this->obj->validate($this->data) );
     }
-    // телефон - 11 цифр, 7 либо 8 в начале
+
+    // телефон - 11 цифр, 7 либо 8 в начале, ожидаем false
     public function testPhoneNotValidate(): void {
-        $this->data['phone'] = "44-55-66";
-        $this->assertSame( false, 
+        $this->data['phone'] = "44-55-66"; // некорректный, ожидаем true
+        $this->assertSame( true, 
                            $this->obj->validate($this->data) );
-        $this->data['phone'] = "19004556677";
-        $this->assertSame( false, 
+        $this->data['phone'] = "19004556677"; // тоже, ожидаем true
+        $this->assertSame( true, 
                             $this->obj->validate($this->data) );                           
     }
-    // емайл - невалидные адреса проверить, типа "invalid", "@missing.username", ""
+
+    // емайл - невалидные адреса, ожидаем true
     public function testEmailNotValidate(): void {
-        $this->data['email'] = "invalid";
-        $this->assertSame( false,
+        $this->data['email'] = "invalid"; // должен быть false, ожидаем true
+        $this->assertSame( true,
                            $this->obj->validate($this->data) );
-        $this->data['phone'] = "@missing.username";
-        $this->assertSame( false,
+        $this->data['email'] = "@missing.username"; // тоже, ожидаем true
+        $this->assertSame( true,
                             $this->obj->validate($this->data) );
-        $this->data['phone'] = "";
-        $this->assertSame( false,
+        $this->data['email'] = ""; // пустой, ожидаем true
+        $this->assertSame( true,
                             $this->obj->validate($this->data) );
     }
 }
